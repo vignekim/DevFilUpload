@@ -15,7 +15,8 @@ public class FileController {
   @PostMapping("/fileUpload")
   public String fileUpload(@RequestParam("file") MultipartFile file) {
     if(!file.isEmpty()){
-      System.out.println(fc.setFile(file));
+      //System.out.println(fc.setFile(file));
+      System.out.println(fc.upload(file));
     }
     return "redirect:/";
   }

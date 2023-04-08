@@ -1,6 +1,7 @@
 package com.folder.boot.components;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -43,6 +44,22 @@ public class FileComponeent {
     resultMap.put("NewName", setName());
     resultMap.put("Extension", getExtension(multipartFile));
     return resultMap;
+  }
+
+  public String upload(MultipartFile multipartFile) {
+    String path = getRootPath() + middlePath + lastPath + getCurrnetDatePath();
+    String fileName = getName(multipartFile);
+    File file = new File(path + "/" + fileName);
+    if(!file.exists()){
+      file.mkdirs();
+    }
+    try {
+      multipartFile.transferTo(file);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    String url = lastPath + getCurrnetDatePath() + "/" + fileName;
+    return url;
   }
 
 }
