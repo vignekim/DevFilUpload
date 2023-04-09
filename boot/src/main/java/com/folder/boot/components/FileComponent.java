@@ -1,18 +1,22 @@
 package com.folder.boot.components;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 @Component
-public class FileComponeent {
+public class FileComponent {
 
   private Map<String, Object> resultMap;
   private String lastPath = "/upload";
@@ -61,5 +65,34 @@ public class FileComponeent {
     String url = lastPath + getCurrnetDatePath() + "/" + fileName;
     return url;
   }
+
+  public String upload2(MultipartFile multipartFile) {
+    String url = lastPath.concat(getCurrnetDatePath()).concat("/").concat(setName()).concat(getExtension(multipartFile));
+    String newPath = getRootPath().concat(middlePath).concat(url);
+    try {
+      File file = new File(newPath);
+      if(!file.exists()){file.mkdirs();}
+      multipartFile.transferTo(file);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return url;
+  }
+
+  public ResponseEntity<?> getFile(String url) {
+    try {
+      String path = getRootPath().concat(middlePath).concat(url);
+      File file = new File(path);
+      return ResponseEntity.ok()
+        .contentLength(file.length())
+        .contentType(MediaType.parseMediaType("image/png"))
+        .body(new InputStreamResource(new FileInputStream(file)));
+    } catch (Exception e) {
+      e.printStackTrace();
+      return ResponseEntity.notFound().build();
+    }
+  }
+
+
 
 }
